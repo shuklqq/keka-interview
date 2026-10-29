@@ -1,0 +1,40 @@
+{
+  // Java language server: import the Maven project automatically and keep it in sync with pom.xml.
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.autobuild.enabled": true,
+
+  // Imports: add the ones that resolve unambiguously and remove unused ones on every save.
+  // Order "#" then "" = static imports first, then everything alphabetically (matches the template files).
+  "java.saveActions.organizeImports": true,
+  "java.completion.importOrder": ["#", ""],
+  "[java]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+
+  // Completion: Enter accepts the highlighted suggestion (that is what adds the import).
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.suggestSelection": "first",
+  "java.completion.guessMethodArguments": "auto",
+  "java.completion.favoriteStaticMembers": [
+    "org.assertj.core.api.Assertions.*",
+    "org.mockito.Mockito.*",
+    "org.mockito.ArgumentMatchers.*",
+    "org.mockito.BDDMockito.*",
+    "org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*",
+    "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*"
+  ],
+
+  // Test Runner (the beaker icon) does not read surefire's argLine, so silence the Mockito agent warning here too.
+  "java.test.config": {
+    "vmArgs": ["-XX:+EnableDynamicAgentLoading"]
+  },
+
+  "files.exclude": {
+    "**/target": true
+  },
+
+  // Written by the Java extension on first open; set here so the round starts without that prompt.
+  "java.compile.nullAnalysis.mode": "automatic"
+}

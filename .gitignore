@@ -1,0 +1,15 @@
+# Build output
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/*
+!.vscode/settings.json
+.classpath
+.project
+.settings/
+
+# OS / misc
+.DS_Store
+*.log

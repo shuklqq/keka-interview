@@ -1,0 +1,79 @@
+# VS Code: install the "REST Client" extension (humao.rest-client), then click "Send Request" above each block.
+# "# @name create" lets later requests reuse the created id via {{create.response.body.id}}.
+# The same calls are in postman/interview-template.postman_collection.json and as curl lines in README.md.
+
+### Health (actuator)
+GET http://localhost:8080/actuator/health
+
+### Create a task as user u1 (201 + Location header)
+# @name create
+POST http://localhost:8080/api/v1/tasks
+Content-Type: application/json
+X-User-Id: u1
+
+{
+  "title": "Write the interview template",
+  "description": "Spring Boot, in-memory store, RestClient",
+  "priority": "HIGH"
+}
+
+### Missing user header (400)
+POST http://localhost:8080/api/v1/tasks
+Content-Type: application/json
+
+{ "title": "no header" }
+
+### Validation failure (400 with fieldErrors)
+POST http://localhost:8080/api/v1/tasks
+Content-Type: application/json
+X-User-Id: u1
+
+{
+  "title": "   "
+}
+
+### Malformed JSON (400)
+POST http://localhost:8080/api/v1/tasks
+Content-Type: application/json
+X-User-Id: u1
+
+{ "title": 
+
+### Wrong content type (415)
+POST http://localhost:8080/api/v1/tasks
+Content-Type: application/x-www-form-urlencoded
+X-User-Id: u1
+
+title=form
+
+### Get by id (200)
+GET http://localhost:8080/api/v1/tasks/{{create.response.body.id}}
+
+### Unknown id (404)
+GET http://localhost:8080/api/v1/tasks/does-not-exist
+
+### List all
+GET http://localhost:8080/api/v1/tasks
+
+### List one owner's tasks
+GET http://localhost:8080/api/v1/tasks?ownerId=u1
+
+### Complete as the owner (200, status DONE, outbound notification to /internal/echo)
+POST http://localhost:8080/api/v1/tasks/{{create.response.body.id}}/complete
+X-User-Id: u1
+
+### Complete as someone else (403)
+POST http://localhost:8080/api/v1/tasks/{{create.response.body.id}}/complete
+X-User-Id: u2
+
+### Complete again (409)
+POST http://localhost:8080/api/v1/tasks/{{create.response.body.id}}/complete
+X-User-Id: u1
+
+### Echo endpoint directly (the stand-in downstream)
+POST http://localhost:8080/internal/echo
+Content-Type: application/json
+
+{
+  "hello": "world"
+}

@@ -1,0 +1,256 @@
+{
+  "info": {
+    "name": "interview-template",
+    "description": "Task slice of the interview template. Run 'Create task' first: it stores the id in {{taskId}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "taskId",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": "u1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/actuator/health"
+      }
+    },
+    {
+      "name": "Create task (201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User-Id",
+            "value": "{{userId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Write the interview template\",\n  \"description\": \"Spring Boot, in-memory store, RestClient\",\n  \"priority\": \"HIGH\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set(\"taskId\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create: missing user header (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"title\": \"no header\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create: blank title (400 fieldErrors)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User-Id",
+            "value": "{{userId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"title\": \"   \" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create: malformed JSON (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-User-Id",
+            "value": "{{userId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"title\": ",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create: form body (415)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          },
+          {
+            "key": "X-User-Id",
+            "value": "{{userId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "title=form"
+        }
+      }
+    },
+    {
+      "name": "Get by id (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/tasks/{{taskId}}"
+      }
+    },
+    {
+      "name": "Get unknown id (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/tasks/does-not-exist"
+      }
+    },
+    {
+      "name": "List all",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/tasks"
+      }
+    },
+    {
+      "name": "List by owner",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/tasks?ownerId={{userId}}"
+      }
+    },
+    {
+      "name": "Complete as owner (200, notifies downstream)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-User-Id",
+            "value": "{{userId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/tasks/{{taskId}}/complete"
+      }
+    },
+    {
+      "name": "Complete as other user (403)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-User-Id",
+            "value": "u2"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/tasks/{{taskId}}/complete"
+      }
+    },
+    {
+      "name": "Complete again (409)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-User-Id",
+            "value": "{{userId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/v1/tasks/{{taskId}}/complete"
+      }
+    },
+    {
+      "name": "Echo directly",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/internal/echo",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"hello\": \"world\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

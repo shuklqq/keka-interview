@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: interview-template
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# Logging: Logback via SLF4J (Spring Boot default). Use @Slf4j from Lombok in classes.
+logging:
+  level:
+    root: INFO
+    com.ranjeet.interview: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %-5level [%15.15t] %-40.40logger{39} : %m%n"
+
+# Outbound HTTP client. Bound to config/ExternalServiceProperties, used by config/HttpClientConfig.
+# Defaults to this very app (POST /internal/echo) so the outbound path works with no internet.
+external:
+  base-url: http://localhost:8080
+  connect-timeout: 3s
+  read-timeout: 5s
