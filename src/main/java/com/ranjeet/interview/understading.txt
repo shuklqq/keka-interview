@@ -1,0 +1,19 @@
+operations:
+1 - Ingest Alerts
+2 - Save as Incicdents
+3 - Notify the oncall
+3a - Notify depends on severity - Severe -> external call to telephony provider
+
+Recording is mandatory
+
+POST call to ingest the incedent
+GET call to get the Incicdents
+ we are more concerned on status - Incident Status and Notfication Status.
+
+Entities:
+Alert(id, severity(enum), notification status, incident status, Notifier(hashmap))
+Severity()
+Notifier
+
+
+
